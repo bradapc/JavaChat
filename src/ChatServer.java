@@ -26,12 +26,14 @@ public class ChatServer {
     }
 
     public void receiveMessage(String message, SocketThread socketThread) {
+        String username = socketThread.getUsername();
+        String newMessage = username + ": " + message + '\0';
         for (SocketThread sThread : socketThreads) {
             if (sThread != null && !sThread.equals(socketThread)) {
                 try {
                     Socket sThreadSocket = sThread.getSocket();
                     DataOutputStream output = new DataOutputStream(sThreadSocket.getOutputStream());
-                    output.writeBytes(message);
+                    output.writeBytes(newMessage);
                 } catch (Exception e) {
                     System.out.println(e);
                 }

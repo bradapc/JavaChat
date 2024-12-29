@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class ChatClient {
     Scanner stdin = new Scanner(System.in);
     Socket conn;
+    String username;
 
     public ChatClient() {
         try {
@@ -14,10 +15,23 @@ public class ChatClient {
             System.out.println("Connected.");
             ChatClientReceiver chatClientThread = new ChatClientReceiver(this, conn);
             chatClientThread.start();
+            username = createUsername();
+            System.out.println("Hello, " + username);
+            sendUsername();
             receiveMessages();
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    public String createUsername() {
+        String user = "";
+        do {
+            System.out.print("Enter a username: ");
+            user = stdin.next();
+            System.out.println();
+        } while (user.isEmpty());
+        return user;
     }
 
     public void receiveMessages() {
@@ -36,9 +50,24 @@ public class ChatClient {
 
     public void sendMessage(String message) {
         try {
-            message += '\n';
+            message += '\0';
             DataOutputStream output = new DataOutputStream(conn.getOutputStream());
             output.writeBytes(message);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void sendUsername() {
+        try {
+            byte[] transmission = new byte[username.length() + 2];
+            transmission[0] = 42;
+            for (int i = 0; i < username.length(); i++) {
+                transmission[i + 1] = (byte) username.charAt(i);
+            }
+            transmission[transmission.length - 1] = '\0';
+            DataOutputStream output = new DataOutputStream(conn.getOutputStream());
+            output.write(transmission);
         } catch (Exception e) {
             System.out.println(e);
         }

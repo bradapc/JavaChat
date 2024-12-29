@@ -21,8 +21,9 @@ public class ChatClientReceiver extends Thread {
                 while ((byteRead = input.read()) != -1) {
                     buffer.write(byteRead);
 
-                    if (byteRead == '\n') {
-                        String message = new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+                    if (byteRead == '\0') {
+                        byte[] bytes = buffer.toByteArray();
+                        String message = new String(bytes, 0, bytes.length - 1, StandardCharsets.UTF_8);
                         chatClient.printMessage(message);
                         buffer.reset();
                     }
