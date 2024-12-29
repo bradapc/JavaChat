@@ -1,8 +1,6 @@
 import java.io.DataOutputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ChatClient {
@@ -14,6 +12,8 @@ public class ChatClient {
             Socket conn = new Socket(InetAddress.getLocalHost(), 4433);
             this.conn = conn;
             System.out.println("Connected.");
+            ChatClientReceiver chatClientThread = new ChatClientReceiver(this, conn);
+            chatClientThread.start();
             receiveMessages();
         } catch (Exception e) {
             System.out.println(e);
@@ -28,6 +28,10 @@ public class ChatClient {
                 sendMessage(message);
             }
         }
+    }
+
+    public void printMessage(String message) {
+        System.out.println(message);
     }
 
     public void sendMessage(String message) {

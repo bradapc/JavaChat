@@ -2,23 +2,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
-public class SocketThread extends Thread {
+public class ChatClientReceiver extends Thread {
+    private ChatClient chatClient;
     private Socket socket;
-    private ChatServer chatServer;
 
-    public SocketThread(Socket socket, ChatServer chatServer) {
+    public ChatClientReceiver(ChatClient chatClient, Socket socket) {
+        this.chatClient = chatClient;
         this.socket = socket;
-        this.chatServer = chatServer;
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
-
+    @Override
     public void run() {
-        while (true) {
             try {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -28,13 +23,12 @@ public class SocketThread extends Thread {
 
                     if (byteRead == '\n') {
                         String message = new String(buffer.toByteArray(), StandardCharsets.UTF_8);
-                        chatServer.receiveMessage(message, this);
+                        chatClient.printMessage(message);
                         buffer.reset();
                     }
                 }
             } catch (Exception e) {
                 System.out.println(e);
             }
-        }
     }
 }

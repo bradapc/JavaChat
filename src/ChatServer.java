@@ -1,3 +1,4 @@
+import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
@@ -24,8 +25,18 @@ public class ChatServer {
         }
     }
 
-    public void receiveMessage(String message) {
-        System.out.println(message);
+    public void receiveMessage(String message, SocketThread socketThread) {
+        for (SocketThread sThread : socketThreads) {
+            if (sThread != null && !sThread.equals(socketThread)) {
+                try {
+                    Socket sThreadSocket = sThread.getSocket();
+                    DataOutputStream output = new DataOutputStream(sThreadSocket.getOutputStream());
+                    output.writeBytes(message);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
