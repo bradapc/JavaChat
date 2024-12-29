@@ -11,15 +11,21 @@ public class ChatServer {
     }
 
     public void acceptConnection(Socket socket) {
-        SocketThread socketThread = new SocketThread(socket);
+        SocketThread socketThread = new SocketThread(socket, this);
         String clientAddrStr = socket.getInetAddress().getHostAddress();
         int clientPort = socket.getPort();
         System.out.println("Accepted connection from " + clientAddrStr + ":" + clientPort);
         for (int i = 0; i < socketThreads.length; i++) {
             if (socketThreads[i] == null) {
                 socketThreads[i] = socketThread;
+                socketThreads[i].start();
+                return;
             }
         }
+    }
+
+    public void receiveMessage(String message) {
+        System.out.println(message);
     }
 
     public static void main(String[] args) {
