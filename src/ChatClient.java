@@ -7,16 +7,21 @@ public class ChatClient {
     Scanner stdin = new Scanner(System.in);
     Socket conn;
     String username;
+    InetAddress serverAddress;
+    int port;
 
     public ChatClient() {
+            username = createUsername();
+            System.out.println("Hello, " + username);
         try {
-            Socket conn = new Socket(InetAddress.getLocalHost(), 4433);
+            serverAddress = InetAddress.getLocalHost();
+            port = 4433;
+            System.out.println("Attempting to connect to " + serverAddress.getHostAddress() + ":" + port);
+            Socket conn = new Socket(serverAddress, port);
             this.conn = conn;
             System.out.println("Connected.");
             ChatClientReceiver chatClientThread = new ChatClientReceiver(this, conn);
             chatClientThread.start();
-            username = createUsername();
-            System.out.println("Hello, " + username);
             sendUsername();
             receiveMessages();
         } catch (Exception e) {
