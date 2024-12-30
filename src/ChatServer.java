@@ -4,6 +4,7 @@ import java.net.Socket;
 
 public class ChatServer {
     private SocketThread[] socketThreads;
+    public final int MAX_CONNECTIONS = 10;
 
     public ChatServer() {
         socketThreads = new SocketThread[10];
@@ -55,6 +56,31 @@ public class ChatServer {
                 }
             }
         }
+    }
+
+    public void broadcastMessage (String message) {
+        String newMessage = "SERVER: " + message + '\0';
+        for (SocketThread sThread : socketThreads) {
+            if (sThread != null) {
+                try {
+                    Socket sThreadSocket = sThread.getSocket();
+                    DataOutputStream output = new DataOutputStream(sThreadSocket.getOutputStream());
+                    output.writeBytes(newMessage);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+
+    public int getConnectedUsers() {
+        int count = 0;
+        for (SocketThread st : socketThreads) {
+            if (st != null) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static void main(String[] args) {

@@ -34,6 +34,8 @@ public class SocketThread extends Thread {
                         byte[] bytes = buffer.toByteArray();
                         if (buffer.toByteArray()[0] == 42) {
                             username = new String(bytes, 1, bytes.length - 2, StandardCharsets.UTF_8);
+                            chatServer.broadcastMessage(username + " has joined the chat. There are " + chatServer.getConnectedUsers() + "/" +
+                                    chatServer.MAX_CONNECTIONS + " users connected.");
                         } else {
                             String message = new String(bytes, 0, bytes.length - 1, StandardCharsets.UTF_8);
                             chatServer.receiveMessage(message, this);
