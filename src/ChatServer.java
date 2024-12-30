@@ -8,6 +8,8 @@ public class ChatServer {
     public ChatServer() {
         socketThreads = new SocketThread[10];
         ChatServerListener chatServerListener = new ChatServerListener(4433, this);
+        chatServerListener.start();
+        System.out.println("ChatServer is now running.");
     }
 
     public void acceptConnection(Socket socket) {
